@@ -1,3 +1,5 @@
+export const runtime = 'nodejs';
+
 import { eq } from "drizzle-orm"
 import { auth } from "~/auth"
 import verifyDomainValues from "~/config/domain.vercel"

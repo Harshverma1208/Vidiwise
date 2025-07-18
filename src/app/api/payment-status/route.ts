@@ -1,4 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+
+export const runtime = 'nodejs';
+
 const ORDER_CREATED = "order_created";
 const ORDER_REFUNDED = "order_refunded";
 const SUBSCRIPTION_CREATED = "subscription_created";
