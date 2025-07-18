@@ -1,9 +1,7 @@
-'use client';
+"use client";
 
 import Image from "next/legacy/image";
 import Link from 'next/link';
-"use client";
-
 import React from 'react'
 import content from '~/config/content';
 import Button from '../ui/Button';
