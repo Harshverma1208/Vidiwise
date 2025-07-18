@@ -1,5 +1,3 @@
-'use server'
-
 import { fetchTranscriptImproved, type TranscriptItem } from './transcript-improved';
 import { textTotext } from './gemini';
 

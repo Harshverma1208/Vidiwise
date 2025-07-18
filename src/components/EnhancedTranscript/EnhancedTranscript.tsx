@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react'
 import { FileText, Clock, Brain, Search, Copy, Download, Tag, Sparkles } from 'lucide-react';
+"use client";
+
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface TranscriptSegment {

@@ -6,6 +6,8 @@ import { IoMdSend } from "react-icons/io";
 import { X, Send, MessageCircle, Sparkles } from "lucide-react";
 import { type TranscriptProps } from '~/app/c/[creatorId]/vid/[vidId]/page';
 import { textTotext } from '~/lib/helpers/gemini';
+"use client";
+
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Chat = ({

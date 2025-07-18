@@ -6,6 +6,8 @@ import { fetchVideoId } from "~/lib/helpers/transcript";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useToast } from "../ui/use-toast";
+"use client";
+
 import { motion } from "framer-motion";
 
 const SearchButton = () => {

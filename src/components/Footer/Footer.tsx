@@ -5,6 +5,8 @@ import Link from 'next/link';
 import React from 'react'
 import content from '~/config/content';
 import Button from '../ui/Button';
+"use client";
+
 import { motion } from 'framer-motion';
 import { Github, Twitter, Heart, ArrowRight } from 'lucide-react';
 
