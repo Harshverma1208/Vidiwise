@@ -1,0 +1,1 @@
+ALTER TABLE "vid-b-web_profiles" ADD CONSTRAINT "vid-b-web_profiles_domain_unique" UNIQUE("domain");

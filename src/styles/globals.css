@@ -1,0 +1,328 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 224 71.4% 4.1%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 224 71.4% 4.1%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71.4% 4.1%;
+
+    --primary: 263 85% 65%;
+    --primary-foreground: 210 20% 98%;
+
+    --secondary: 220 14.3% 95.9%;
+    --secondary-foreground: 220.9 39.3% 11%;
+
+    --muted: 220 14.3% 95.9%;
+    --muted-foreground: 220 8.9% 46.1%;
+
+    --accent: 220 14.3% 95.9%;
+    --accent-foreground: 220.9 39.3% 11%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 20% 98%;
+
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 263 85% 65%;
+
+    --radius: 0.75rem;
+    
+    /* Modern color palette */
+    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --gradient-secondary: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    --gradient-accent: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --glass-background: rgba(255, 255, 255, 0.25);
+    --glass-border: rgba(255, 255, 255, 0.18);
+  }
+
+  .dark {
+    --background: 224 71.4% 4.1%;
+    --foreground: 210 20% 98%;
+
+    --card: 224 71.4% 4.1%;
+    --card-foreground: 210 20% 98%;
+
+    --popover: 224 71.4% 4.1%;
+    --popover-foreground: 210 20% 98%;
+
+    --primary: 263 85% 65%;
+    --primary-foreground: 220.9 39.3% 11%;
+
+    --secondary: 215 27.9% 16.9%;
+    --secondary-foreground: 210 20% 98%;
+
+    --muted: 215 27.9% 16.9%;
+    --muted-foreground: 217.9 10.6% 64.9%;
+
+    --accent: 215 27.9% 16.9%;
+    --accent-foreground: 210 20% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 20% 98%;
+
+    --border: 215 27.9% 16.9%;
+    --input: 215 27.9% 16.9%;
+    --ring: 263 85% 65%;
+    
+    --glass-background: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.2);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+    scroll-padding: 1.5rem;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer components {
+  /* Layout utilities */
+  .w-responsive {
+    @apply w-[90%] lg:w-3/4 mx-auto;
+  }
+  
+  .w-res-90 {
+    @apply w-[90%] mx-auto;
+  }
+
+  /* Typography */
+  .h1-main {
+    @apply text-5xl md:text-6xl xl:text-8xl font-bold;
+  }
+
+  /* Modern glassmorphism effects */
+  .glass {
+    background: var(--glass-background);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+  }
+  
+  .glass-card {
+    @apply glass rounded-2xl p-6 shadow-xl;
+  }
+  
+  .glass-nav {
+    @apply glass rounded-full px-6 py-3 shadow-lg;
+  }
+
+  /* Modern gradients */
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .gradient-secondary {
+    background: var(--gradient-secondary);
+  }
+  
+  .gradient-text {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Modern color utilities */
+  .text-purple {
+    @apply text-[#667eea];
+  }
+
+  .bg-purple {
+    @apply bg-[#667eea];
+  }
+
+  .bg-blue {
+    @apply bg-[#30C7F7];
+  }
+
+  .bg-light-blue {
+    @apply bg-[#4FBCFE];
+  }
+
+  .bg-lighter-blue {
+    @apply bg-[#CBEFFF];
+  }
+
+  .bg-pink {
+    @apply bg-[#F73090];
+  }
+
+  .bg-light-pink {
+    @apply bg-[#FFE8F7];
+  }
+
+  .bg-lighter-pink {
+    @apply bg-[#FFF3FF];
+  }
+
+  .bg-darkBlue {
+    @apply bg-[#4C30F7];
+  }
+  
+  .bg-light-darkBlue {
+    @apply bg-[#826EEF];
+  }
+  
+  .bg-lighter-darkBlue {
+    @apply bg-[#AEA1F2];
+  }
+
+  .border-purple {
+    @apply border border-[#667eea];
+  }
+
+  .bg-main {
+    @apply bg-[#667eea];
+  }
+  
+  .fill-main {
+    @apply fill-[#667eea];
+  }
+  
+  .text-main {
+    @apply text-[#667eea];
+  }
+  
+  .border-main {
+    @apply border border-[#667eea];
+  }
+
+  /* Flexbox utilities */
+  .flex-center {
+    @apply flex items-center justify-center;
+  }
+  
+  .flex-stretch-center {
+    @apply flex items-center justify-stretch;
+  }
+  
+  .flex-center-start {
+    @apply flex items-center justify-start;
+  }
+
+  .flex-center-end {
+    @apply flex items-center justify-end;
+  }
+
+  .flex-center-between {
+    @apply flex items-center justify-between;
+  }
+
+  .flex-center-around {
+    @apply flex items-center justify-around;
+  }
+
+  .flex-center-evenly {
+    @apply flex items-center justify-evenly;
+  }
+
+  .flex-col-center-start {
+    @apply flex flex-col items-center justify-start;
+  }
+
+  .flex-col-center-center {
+    @apply flex flex-col items-center justify-center;
+  }
+
+  .flex-col-center-end {
+    @apply flex flex-col items-center justify-end;
+  }
+
+  .flex-col-center-between {
+    @apply flex flex-col items-center justify-between;
+  }
+
+  .flex-col-center-around {
+    @apply flex flex-col items-center justify-around;
+  }
+
+  .flex-col-start-start {
+    @apply flex flex-col items-start justify-start;
+  }
+
+  /* Position utilities */
+  .absolute-v-center {
+    @apply absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2;
+  }
+
+  .absolute-h-center {
+    @apply absolute left-1/2 -translate-x-1/2;
+  }
+
+  /* Modern shadows */
+  .shadow-glass {
+    box-shadow: 
+      0 8px 32px 0 rgba(31, 38, 135, 0.37),
+      0 4px 16px 0 rgba(31, 38, 135, 0.2);
+  }
+  
+  .shadow-modern {
+    box-shadow: 
+      0 10px 25px -3px rgba(0, 0, 0, 0.1),
+      0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+
+  .shadow-gray {
+    @apply shadow-xl shadow-gray-200/50;
+  }
+
+  /* Modern animations */
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+}
+
+@layer utilities {
+  /* Custom animations */
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  @keyframes glow {
+    from { box-shadow: 0 0 20px rgba(102, 126, 234, 0.3); }
+    to { box-shadow: 0 0 30px rgba(102, 126, 234, 0.6); }
+  }
+  
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(102, 126, 234, 0.3);
+    border-radius: 10px;
+    transition: background 0.3s ease;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(102, 126, 234, 0.5);
+  }
+}

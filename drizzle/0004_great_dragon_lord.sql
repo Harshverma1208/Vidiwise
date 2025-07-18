@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX IF NOT EXISTS "vid-b-web_profiles_domain_domainVerified_index" ON "vid-b-web_profiles" ("domain","domainVerified");
