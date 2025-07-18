@@ -1,12 +1,10 @@
-'use client';
+"use client";
 
 import React from 'react'
 import Image from "next/legacy/image"
 import Link from 'next/link'
 import Button from '../ui/Button'
 import content from '~/config/content'
-"use client";
-
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSession, signOut } from 'next-auth/react'
 import { User, Menu, X, ChevronDown, Settings, LogOut } from 'lucide-react'

@@ -1,4 +1,5 @@
-"use client"
+"use client";
+
 import { ArrowRight, Search, Play } from "lucide-react";
 import { useState, useCallback, useEffect } from "react";
 import Button from "../ui/Button";
@@ -6,8 +7,6 @@ import { fetchVideoId } from "~/lib/helpers/transcript";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useToast } from "../ui/use-toast";
-"use client";
-
 import { motion } from "framer-motion";
 
 const SearchButton = () => {

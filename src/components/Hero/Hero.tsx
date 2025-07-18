@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React from "react";
 import Title, { SubTitle } from "../ui/Title";
@@ -7,8 +7,6 @@ import Image from "next/legacy/image";
 import Button from "../ui/Button";
 import { ArrowRight, Play, Zap } from "lucide-react";
 import SearchButton from "./SearchButton";
-"use client";
-
 import { motion } from 'framer-motion';
 import Link from "next/link";
 

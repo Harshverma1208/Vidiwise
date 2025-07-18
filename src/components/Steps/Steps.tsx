@@ -1,12 +1,10 @@
-'use client';
+"use client";
 
 import React from 'react'
 import Title from '../ui/Title'
 import content from '~/config/content'
 import Image from "next/legacy/image";
 import StepCard from './StepCard';
-"use client";
-
 import { motion } from 'framer-motion';
 
 const Steps = () => {
