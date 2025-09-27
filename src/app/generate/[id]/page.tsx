@@ -9,26 +9,19 @@ import fetchTranscript, {
   fetchVideoTranscrptDB,
 } from "~/lib/helpers/transcript";
 import { redirect } from "next/navigation";
-import { auth } from "~/auth";
 import { textTotext } from "~/lib/helpers/gemini";
 
 export default async function Page({ params }: { params: { id: string } }) {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const session: {
-    userId: string;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  } = await auth();
-
-  if (!session) {
-    return redirect("/api/auth/signin?callbackUrl=/generate/" + params.id);
-  }
+  // For now, we'll use a placeholder userId since auth is removed
+  // This should be replaced with proper authentication when implementing new auth
+  const userId = "guest-user"; // This should come from your new auth system
 
   // check if video is already generated for this creator
-  const video = await fetchTranscriptDBCreator(params.id, session.userId);
+  const video = await fetchTranscriptDBCreator(params.id, userId);
 
   // if video is already generated, redirect to the video page for this creator
   if(video[0]) {
-    return redirect("/c/" + session.userId + "/vid/" + params.id);
+    return redirect("/c/" + userId + "/vid/" + params.id);
   }
 
   const videoBySomeoneElse = await fetchVideoTranscrptDB(params.id);
@@ -44,16 +37,14 @@ export default async function Page({ params }: { params: { id: string } }) {
         title: videoBySomeoneElse[0].title,
         thumbnail: videoBySomeoneElse[0].thumbnail,
         channelTitle: videoBySomeoneElse[0].channelTitle,
-        userId: session.userId,
+        userId: userId,
         summary: videoBySomeoneElse[0].summary,
         videoId: params.id,
       })
       .onConflictDoNothing();
 
-
-     return redirect("/c/" + session.userId + "/vid/" + params.id); 
+     return redirect("/c/" + userId + "/vid/" + params.id); 
   }
-
 
   // Fetch Meta Data for video
   const metaData = await fetchMetaData(params.id);
@@ -67,7 +58,7 @@ export default async function Page({ params }: { params: { id: string } }) {
       title: metaData.title,
       thumbnail: metaData.thumbnail_url,
       channelTitle: metaData.author_name,
-      userId: session.userId,
+      userId: userId,
       summary: "",
       videoId: params.id,
     }).onConflictDoNothing();
@@ -106,11 +97,11 @@ export default async function Page({ params }: { params: { id: string } }) {
       title: metaData.title,
       thumbnail: metaData.thumbnail_url,
       channelTitle: metaData.author_name,
-      userId: session.userId,
+      userId: userId,
       summary: summary,
       videoId: params.id,
     })
     .onConflictDoNothing();
 
-  return redirect("/c/" + session.userId + "/vid/" + params.id);
+  return redirect("/c/" + userId + "/vid/" + params.id);
 }

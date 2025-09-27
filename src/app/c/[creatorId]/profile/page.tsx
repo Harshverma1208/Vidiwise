@@ -1,15 +1,9 @@
-
-import { Session } from "inspector";
 import { HomeIcon, Video } from "lucide-react";
-import { useSession } from "next-auth/react";
 import Image from "next/legacy/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { MdAccountCircle, MdPerson } from "react-icons/md";
-import { auth } from "~/auth";
 import FormProfile from "~/components/Profile/FormProfile";
-
-import SignOut from "~/components/ui/SignOut";
 import { domainConfigValuesAll } from "~/lib/domains";
 import { getOrCreateProfile } from "~/lib/helpers/profile";
 import {
@@ -30,14 +24,11 @@ export default async function Page({
     creatorId: string;
   };
 }) {
+  // For now, we'll use a placeholder userId since auth is removed
+  // This should be replaced with proper authentication when implementing new auth
+  const userId = "guest-user"; // This should come from your new auth system
 
-  const session = await auth();
-
-  if(!session?.user?.id) {
-    return redirect("/api/auth/signin?callbackUrl=/c/" + params.creatorId);
-  }
-
-  const userProfile = await getOrCreateProfile();
+  const userProfile = await getOrCreateProfile(userId);
 
   let configResponse;
   if(userProfile?.domain) {
@@ -50,31 +41,19 @@ export default async function Page({
         <Link href="/" className="rounded-full border-2 p-2">
           <HomeIcon />
         </Link>
-        {session?.user?.id && (
-          <Link
-            href={"/c/" + session?.user.id}
-            className="rounded-full border-2 p-2"
-          >
-            <MdPerson className="h-6 w-6" />
-          </Link>
-        )}
+        <Link
+          href={"/c/guest"}
+          className="rounded-full border-2 p-2"
+        >
+          <MdPerson className="h-6 w-6" />
+        </Link>
       </div>
       <div className="w-full max-w-md">
         <div className="w-full space-y-10 pb-32">
           {/* profile image */}
           <div className="profileimage text-center">
-            {session?.user?.image ? (
-              <Image
-                src={session?.user?.image}
-                alt={session?.user?.name ?? "Profile Image"}
-                width={150}
-                height={150}
-                className="mx-auto h-16 w-16 rounded-full"
-              />
-            ) : (
-              <MdAccountCircle className="mx-auto h-16 w-16 rounded-full text-white" />
-            )}
-            <p className="font-semibold">{session?.user?.name}</p>
+            <MdAccountCircle className="mx-auto h-16 w-16 rounded-full text-white" />
+            <p className="font-semibold">Guest User</p>
             <p className="w-responsive mx-auto my-4 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-2 text-center font-medium uppercase text-white">
               Free User - All Features Included
             </p>
@@ -87,7 +66,7 @@ export default async function Page({
               <label>Name</label>
               <input
                 type="text"
-                defaultValue={session?.user?.name}
+                defaultValue="Guest User"
                 disabled
                 className="rounded-lg border bg-white/20 p-2 text-sm"
               />
@@ -96,7 +75,7 @@ export default async function Page({
               <label>Email</label>
               <input
                 type="email"
-                defaultValue={session?.user?.email}
+                defaultValue="guest@example.com"
                 disabled
                 className="rounded-lg border bg-white/20 p-2 text-sm"
               />
@@ -166,8 +145,6 @@ export default async function Page({
                 )}
               </>
             )}
-
-            <SignOut />
           </div>
         </div>
         <div className="absolute bottom-0 left-0 right-0 z-20 py-4  md:hidden">
@@ -178,7 +155,7 @@ export default async function Page({
             <div className="h-full self-stretch rounded-full bg-white p-2 text-black">
               <MdAccountCircle className="h-10 w-10 " />
             </div>
-            <Link href={`/c/${session?.user?.id}/profile`}>
+            <Link href={`/c/guest/profile`}>
               <Video className="text-w h-8  w-8 rounded-full" />
             </Link>
           </div>
@@ -187,5 +164,3 @@ export default async function Page({
     </div>
   );
 }
-
-

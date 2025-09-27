@@ -5,12 +5,10 @@ import { useState, useCallback, useEffect } from "react";
 import Button from "../ui/Button";
 import { fetchVideoId } from "~/lib/helpers/transcript";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useSession } from "next-auth/react";
 import { useToast } from "../ui/use-toast";
 import { motion } from "framer-motion";
 
 const SearchButton = () => {
-  const { data: session, update, status } = useSession();
   const { toast } = useToast();
   const [url, seturl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -35,15 +33,6 @@ const SearchButton = () => {
         title: "Please enter a video URL",
         description: "Paste a YouTube video URL to get started",
       });
-      return;
-    }
-
-    if (session == undefined || session == null) {
-      toast({
-        title: "Please Sign In",
-        description: "You need to sign in to use this feature",
-      });
-      router.push("/api/auth/signin");
       return;
     }
 

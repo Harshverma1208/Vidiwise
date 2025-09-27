@@ -1,66 +1,101 @@
 # Vidiwise
 
-Transform any video into intelligent knowledge with AI-powered summaries, interactive transcripts, and intelligent chat assistance. A free platform that turns YouTube videos into smart knowledge bases.
+Transform any YouTube video into smart knowledge with AI-powered summaries, interactive transcripts, and intelligent chat.
+
+## Quick Start
+
+### Prerequisites
+- Node.js 18+ 
+- pnpm (recommended) or npm
+- PostgreSQL database
+
+### Environment Setup
+1. Copy `.env.example` to `.env`
+2. Fill in your environment variables:
+   - `DATABASE_URL` - PostgreSQL connection string
+   - `GEMINI_API_KEY` - Google Gemini API key for AI features
+   - `STRIPE_SECRET_KEY` - Stripe secret key for payments
+   - Other required variables as needed
+
+### Installation
+```bash
+pnpm install
+```
+
+### Database Setup
+```bash
+# Generate database migrations
+pnpm db:generate
+
+# Push schema to database
+pnpm db:push
+
+# Open database studio (optional)
+pnpm db:studio
+```
+
+## Running the Application
+
+### Development
+```bash
+pnpm dev
+```
+Opens [http://localhost:3000](http://localhost:3000)
+
+### Production
+```bash
+pnpm build && pnpm start
+```
+
+## Available Scripts
+
+- `pnpm dev` - Start development server
+- `pnpm build` - Build for production
+- `pnpm start` - Start production server
+- `pnpm db:generate` - Generate database migrations
+- `pnpm db:push` - Push schema changes to database
+- `pnpm db:studio` - Open Drizzle Studio
 
 ## Features
 
-- **Instant Transcripts**: Get accurate, timestamped transcripts for any YouTube video in seconds
-- **AI-Powered Summaries**: Understand key points instantly with intelligent video summarization  
-- **Chat with Videos**: Ask questions and get insights from video content using AI chat
-- **Free to Use**: All features available at no cost, no payment required
-- **Custom Domains**: Create your own video knowledge hub with custom domain support
-
-## TODOS
-- [x] Initialize project (w/ t3-stack)
-- [x] Upload to github (w/ github)
-- [x] Deploy to vercel (w/ vercel)
-- [x] Building Mockup UI
-  - [x] Create Landing Page
-  - [x] Creator Page (for users to see all creator videos)
-  - [x] Video Landing Page (for users to see a specific video)
-  - [ ] Make the page editable (for creators to edit the video transcript and resources)
-- [x] Initialize database
-- [x] Add authentication (w/ next-auth)
-- [x] Chatbot functionality
-- [x] Remove pricing and subscription features - now completely free
-- [ ] Multitenancy (Feature for creators)
-  - [ ] DB schema profile (new/ table)
-  - [ ] Vercel Domain Configuration
-    - [ ] Add server actions for vercel domain add
-    - [ ] Domain remove
-    - [ ] Domain update
-  - [ ] Middleware Redirection
-    - [x] Initial redirection (without validation of domain) 
-    - [ ] Validating custom domains w/ users 
-  - [ ] Custom page for custom domains
-    - [x] Home page
-    - [ ] Creator Page
-    - [ ] Vid page
-
-## Getting Started (DEV)
-
-If you don't have pnpm installed, run `npm install -g pnpm`
-
-1. Clone the repo
-2. Run `pnpm install`
-3. Create a `.env` file in the root directory and add the following variables:
-```
-DATABASE_URL=<your database url>
-NEXTAUTH_SECRET=<your secret>
-NEXTAUTH_URL=<your app url>
-SUPABASE_URL=<your supabase url>
-SUPABASE_ANON_KEY=<your supabase anon key>
-GEMINI_API_KEY=<your gemini api key>
-```
-4. Run `pnpm dev`
-5. Open `http://localhost:3000` in your browser
+- 🎥 **Video Processing** - Extract transcripts from YouTube videos
+- 🤖 **AI Summaries** - Generate intelligent summaries using Gemini AI
+- 💬 **Interactive Chat** - Chat with video content
+- 📝 **Enhanced Transcripts** - Timestamped, searchable transcripts
+- 💳 **Payment Integration** - Stripe integration for premium features
+- 🎨 **Modern UI** - Built with Next.js, Tailwind CSS, and Framer Motion
 
 ## Tech Stack
 
-- **Framework**: Next.js 14 with App Router
-- **Authentication**: NextAuth.js with Google OAuth
-- **Database**: PostgreSQL with Drizzle ORM
-- **Styling**: Tailwind CSS
+- **Frontend**: Next.js 14, React, TypeScript, Tailwind CSS
+- **Backend**: Next.js API Routes, Drizzle ORM
+- **Database**: PostgreSQL
 - **AI**: Google Gemini API
-- **Deployment**: Vercel
+- **Payments**: Stripe
+- **UI Components**: Radix UI, Lucide React, Framer Motion
 
+## Project Structure
+
+```
+src/
+├── app/                 # Next.js App Router
+│   ├── api/            # API routes
+│   ├── generate/       # Video processing pages
+│   ├── watch/          # Video viewing pages
+│   └── c/              # Creator profiles
+├── components/         # React components
+│   ├── ui/            # Reusable UI components
+│   ├── Hero/          # Landing page components
+│   ├── Chat/          # Chat functionality
+│   └── Transcript/    # Transcript display
+├── lib/               # Utilities and helpers
+│   ├── helpers/       # Business logic
+│   ├── stripe/        # Payment integration
+│   └── db/           # Database utilities
+└── server/           # Server-side code
+    └── db/           # Database schema
+```
+
+## License
+
+Private project - All rights reserved.

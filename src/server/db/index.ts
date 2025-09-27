@@ -1,30 +1,32 @@
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
 
 import { env } from "~/env";
 import * as schema from "./schema";
-import { migrate } from "drizzle-orm/postgres-js/migrator";
 
 /**
  * Cache the database connection in development. This avoids creating a new connection on every HMR
  * update.
  */
 const globalForDb = globalThis as unknown as {
-  conn: postgres.Sql | undefined;
+  pool: Pool | undefined;
 };
 
-export const conn = globalForDb.conn ?? postgres(env.DATABASE_URL);
-if (env.NODE_ENV !== "production") globalForDb.conn = conn;
+// Create connection pool with pg
+const pool = globalForDb.pool ?? new Pool({
+  connectionString: env.DATABASE_URL,
+  // Connection pool settings for better performance
+  max: 20, // Maximum number of clients in the pool
+  idleTimeoutMillis: 30000, // Close idle clients after 30 seconds
+  connectionTimeoutMillis: 2000, // Return an error after 2 seconds if connection could not be established
+});
 
+if (env.NODE_ENV !== "production") globalForDb.pool = pool;
 
-export const db = drizzle(conn, { schema });
+// Export the pool for direct access if needed
+export { pool };
 
-// const migrateDb = async () => {
-//   try {
-//    await migrate(db, { migrationsFolder: "./drizzle" }); 
-//   } catch (error: any) {
-//     console.log(error.message) 
-//   }
-// }
+// Create Drizzle instance with the pool
+export const db = drizzle(pool, { schema });
 
-// migrateDb().catch(console.error);
+// Note: Migration functions are moved to separate files to avoid bundling issues

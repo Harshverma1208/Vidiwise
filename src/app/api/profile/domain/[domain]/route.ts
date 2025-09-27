@@ -1,7 +1,6 @@
 export const runtime = 'nodejs';
 
 import { eq } from "drizzle-orm"
-import { auth } from "~/auth"
 import verifyDomainValues from "~/config/domain.vercel"
 import { addDomainToVercel, domainConfigValuesAll, getConfigResponse, removeDomainFromVercelProject, removeDomainFromVercelTeam, verifyDomain } from "~/lib/domains"
 import { getOrCreateProfile, profileWDomain } from "~/lib/helpers/profile"
@@ -13,16 +12,14 @@ export const dynamic = 'force-dynamic' // defaults to auto
 export async function GET(request: Request, { params }: { params: { domain: string } }) {
     // get domain config/domain status
     try {
-        const session = await auth()
+        // For now, we'll use a placeholder userId since auth is removed
+        // This should be replaced with proper authentication when implementing new auth
+        const userId = "guest-user"; // This should come from your new auth system
         
-        if(!session) {
-            return Response.redirect("/api/auth/signin")
-        }
-
-        let profile = await getOrCreateProfile();
+        let profile = await getOrCreateProfile(userId);
 
         if(!profile) {
-            return Response.redirect("/api/auth/signin")
+            return Response.json({ status: false, message: "Profile not found" }, { status: 404 });
         }
 
         let message = ""
@@ -51,8 +48,7 @@ export async function GET(request: Request, { params }: { params: { domain: stri
         .set({ domain: params.domain }) 
         .where(eq(profiles.userId, profile.userId))
         .catch((error) => {
-            // console.log("error updating profile ", error)
-            return Response.redirect(`/c/${profile.userId}/profile`)
+            return Response.json({ status: false, message: "Error updating profile" }, { status: 500 });
         })
         
         if(configResposne.isDomainVerified) {
@@ -61,7 +57,7 @@ export async function GET(request: Request, { params }: { params: { domain: stri
             .where(eq(profiles.userId, profile.userId))
         }
         const res = await verifyDomain(params.domain)
-        // console.log(res)
+        
         return Response.json({
             status: true,
             misconfigured: configResposne.misconfigured,
@@ -75,10 +71,9 @@ export async function GET(request: Request, { params }: { params: { domain: stri
         })   
     } catch (error: any) {
         console.log(error)
-        return Response.json({status: false, message: "Something went wront! Please Try again later.", error: error.message}, {status: 500})
+        return Response.json({status: false, message: "Something went wrong! Please Try again later.", error: error.message}, {status: 500})
     }
 }
-
 
 export async function POST(request: Request, { params }: { params: { domain: string } }) {
    try {
@@ -87,7 +82,6 @@ export async function POST(request: Request, { params }: { params: { domain: str
     .from(profiles)
     .where(eq(profiles.domain, params.domain))
     
-    // console.log(allProfiles)
     let response;
     if(!allProfiles[0]) {
       response ={
@@ -104,6 +98,6 @@ export async function POST(request: Request, { params }: { params: { domain: str
 
     return Response.json(response)
    } catch (error) {
-    return Response.json({status: false, message: "Something went wront! Please Try again later.", error: error.message})
+    return Response.json({status: false, message: "Something went wrong! Please Try again later.", error: error.message})
    } 
 }

@@ -6,46 +6,12 @@ import Link from 'next/link'
 import Button from '../ui/Button'
 import content from '~/config/content'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useSession, signOut } from 'next-auth/react'
-import { User, Menu, X, ChevronDown, Settings, LogOut } from 'lucide-react'
-import { useState, useRef, useEffect } from 'react'
+import { Menu, X } from 'lucide-react'
+import { useState } from 'react'
 
 const Header = () => {
   const { header } = content.home;
-  const { data: session } = useSession();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsProfileDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
-  const handleSignOut = async () => {
-    try {
-      setIsProfileDropdownOpen(false);
-      console.log('🔄 Signing out user...');
-      await signOut({ 
-        callbackUrl: '/',
-        redirect: true 
-      });
-      console.log('✅ Sign out successful');
-    } catch (error) {
-      console.error('❌ Sign out error:', error);
-      // Force redirect to home page even if signOut fails
-      window.location.href = '/';
-    }
-  };
 
   return (
     <>
@@ -103,98 +69,13 @@ const Header = () => {
               ))}
             </ul>
             
-            {/* Auth Section */}
+            {/* CTA Section */}
             <div className="flex items-center gap-4">
-              {session ? (
-                <div className="flex items-center gap-3">
-                  <Link href="/generate">
-                    <Button className="hidden sm:block bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 border-0 text-sm">
-                      Dashboard
-                    </Button>
-                  </Link>
-                  
-                  {/* Profile Dropdown */}
-                  <div className="relative" ref={dropdownRef}>
-                    <button
-                      onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                      className="flex items-center gap-2 p-1 rounded-full hover:bg-gray-100 transition-colors"
-                    >
-                      {session.user?.image ? (
-                        <Image
-                          src={session.user.image}
-                          alt="Profile"
-                          width={32}
-                          height={32}
-                          className="rounded-full"
-                        />
-                      ) : (
-                        <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center">
-                          <User size={16} className="text-white" />
-                        </div>
-                      )}
-                      <ChevronDown 
-                        size={16} 
-                        className={`text-gray-600 transition-transform ${
-                          isProfileDropdownOpen ? 'rotate-180' : ''
-                        }`} 
-                      />
-                    </button>
-
-                    {/* Dropdown Menu */}
-                    <AnimatePresence>
-                      {isProfileDropdownOpen && (
-                        <motion.div
-                          initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                          transition={{ duration: 0.2 }}
-                          className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50"
-                        >
-                          {/* User Info */}
-                          <div className="px-4 py-3 border-b border-gray-100">
-                            <p className="text-sm font-medium text-gray-900">
-                              {session.user?.name}
-                            </p>
-                            <p className="text-xs text-gray-500 truncate">
-                              {session.user?.email}
-                            </p>
-                          </div>
-
-                          {/* Menu Items */}
-                          <Link
-                            href={`/c/${session.user?.id}/profile`}
-                            className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                            onClick={() => setIsProfileDropdownOpen(false)}
-                          >
-                            <Settings size={16} />
-                            View Profile
-                          </Link>
-
-                          <button
-                            onClick={handleSignOut}
-                            className="flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors w-full text-left"
-                          >
-                            <LogOut size={16} />
-                            Sign Out
-                          </button>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                </div>
-              ) : (
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <Link href="/api/auth/signin">
-                    <Button className="bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold px-6 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 border-0 text-sm">
-                      Sign in with Google
-                    </Button>
-                  </Link>
-                </motion.div>
-              )}
+              <Link href="/generate">
+                <Button className="bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold px-6 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 border-0 text-sm">
+                  Start Exploring
+                </Button>
+              </Link>
               
               {/* Mobile menu button */}
               <button
@@ -226,39 +107,15 @@ const Header = () => {
                   {link.title}
                 </Link>
               ))}
-              {session && (
-                <>
-                  <Link
-                    href="/generate"
-                    className="block w-full"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold py-2 rounded-full">
-                      Dashboard
-                    </Button>
-                  </Link>
-                  
-                  <Link
-                    href={`/c/${session.user?.id}/profile`}
-                    className="flex items-center gap-3 py-2 text-gray-600 hover:text-gray-900"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <Settings size={16} />
-                    Profile Settings
-                  </Link>
-                  
-                  <button
-                    onClick={() => {
-                      setIsMobileMenuOpen(false);
-                      handleSignOut();
-                    }}
-                    className="flex items-center gap-3 py-2 text-red-600 hover:text-red-700 w-full text-left"
-                  >
-                    <LogOut size={16} />
-                    Sign Out
-                  </button>
-                </>
-              )}
+              <Link
+                href="/generate"
+                className="block w-full"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold py-2 rounded-full">
+                  Start Exploring
+                </Button>
+              </Link>
             </div>
           </motion.div>
         )}

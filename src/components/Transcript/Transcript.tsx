@@ -49,6 +49,9 @@ const Transcript = ({
                   <li>The video is too new or private</li>
                   <li>YouTube's transcript API is temporarily unavailable</li>
                 </ul>
+                <div className="mt-3 p-2 bg-blue-50 rounded text-xs text-blue-700">
+                  💡 <strong>Tip:</strong> Try popular educational videos, TED Talks, or videos with manual captions for better results.
+                </div>
               </div>
             </div>
             

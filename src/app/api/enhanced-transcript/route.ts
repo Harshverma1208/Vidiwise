@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { fetchVideoId, fetchMetaData } from "~/lib/helpers/transcript";
 import { fetchAndProcessTranscript } from "~/lib/helpers/enhanced-transcript-processor";
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);

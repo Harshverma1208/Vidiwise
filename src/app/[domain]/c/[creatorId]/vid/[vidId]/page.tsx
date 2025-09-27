@@ -14,7 +14,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import Link from "next/link";
 import { TiArrowBack } from "react-icons/ti";
 import { useToast } from "~/components/ui/use-toast";
-import { useSession } from "next-auth/react";
+// Removed next-auth usage in favor of dummy auth
+import { useDummyAuth } from "~/lib/auth/DummyAuthContext";
 import { MdDashboard } from "react-icons/md";
 import { motion } from "framer-motion";
 import { Play, Share2, Home, MessageCircle, FileText, Sparkles } from "lucide-react";
@@ -38,7 +39,7 @@ export interface Transcription {
 
 const Page = () => {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { user, isAuthenticated } = useDummyAuth();
   const { toast } = useToast();
 
   const [showMobileChat, setshowMobileChat] = useState(false);

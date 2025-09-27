@@ -3,8 +3,8 @@ import "~/styles/globals.css";
 
 import { Inter } from "next/font/google";
 import { Toaster } from "~/components/ui/toaster";
-import SessionProviderWrapper from "~/components/providers/SessionProviderWrapper";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { DummyAuthProvider } from "~/lib/auth/DummyAuthContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -39,10 +39,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`font-sans ${inter.variable} h-full w-full`}>
-        <SessionProviderWrapper>
+        <DummyAuthProvider>
           {children}
-          <Toaster />
-        </SessionProviderWrapper>
+        </DummyAuthProvider>
+        <Toaster />
       </body>
       <GoogleAnalytics gaId="G-E6J1E0YXT3" />
     </html>

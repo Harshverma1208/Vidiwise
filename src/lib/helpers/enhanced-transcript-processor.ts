@@ -1,5 +1,12 @@
-import { fetchTranscriptImproved, type TranscriptItem } from './transcript-improved';
+import { fetchTranscript } from './transcript';
 import { textTotext } from './gemini';
+
+// Transcript item interface
+export interface TranscriptItem {
+  text: string;
+  duration: number;
+  offset: number;
+}
 
 // Enhanced transcript storage interface
 export interface EnhancedTranscriptData {
@@ -25,8 +32,8 @@ export class TranscriptProcessor {
   async processVideoTranscript(videoId: string): Promise<EnhancedTranscriptData> {
     console.log('🚀 Enhanced Transcript Processing started for:', videoId);
 
-    // Fetch transcript using the existing improved system
-    this.timestampedSegments = await fetchTranscriptImproved(videoId);
+    // Fetch transcript using the standard system
+    this.timestampedSegments = await fetchTranscript(videoId);
     
     if (this.timestampedSegments.length === 0) {
       throw new Error('No transcript available for this video');

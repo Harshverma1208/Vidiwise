@@ -12,10 +12,12 @@ const Chat = ({
   showMobileChat,
   setshowMobileChat,
   transcripts,
+  videoId,
 }: {
   showMobileChat: boolean;
   setshowMobileChat: (showMobileChat: boolean) => void;
   transcripts: TranscriptProps[];
+  videoId?: string;
 }) => {
   const [chatTraining, setchatTraining] = useState(true);
   const suggestions = [
@@ -78,6 +80,12 @@ const Chat = ({
     });
     setpara(text);
   }, [transcripts]);
+
+  // Reset chat state when video changes
+  useEffect(() => {
+    setChatHistory([]);
+    setchatResponse("");
+  }, [videoId]);
 
   // Desktop Chat Sidebar
   const DesktopChat = () => (

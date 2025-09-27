@@ -1,13 +1,5 @@
-import { auth } from "~/auth";
-
 export async function POST(request: Request) {
     try {
-        const session = await auth()
-        
-        if(!session) {
-            return Response.redirect("/api/auth/signin")
-        }
-
         const body = await request.json()
         return Response.json({
             status: true, 

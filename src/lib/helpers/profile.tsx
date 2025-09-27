@@ -1,44 +1,27 @@
-"use server"
-
 import { eq } from "drizzle-orm";
-import { redirect } from "next/navigation";
-import { auth } from "~/auth"
 import { db } from "~/server/db";
 import { profiles, users } from "~/server/db/schema";
 
-
-export const getOrCreateProfile = async () => {
-    const session = await auth(); 
-    if (!session?.user?.id) {
-      return redirect("/api/auth/signin");
-    }
-
+export const getOrCreateProfile = async (userId: string) => {
     const profile = await db
       .select()
       .from(profiles)
-      .where(eq(profiles.userId, session?.user?.id));
+      .where(eq(profiles.userId, userId));
 
     if(!profile[0]) {
         // create profile
-        const profile = await db.insert(profiles).values({
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-            userId : session.user.id! as string,
+        const newProfile = await db.insert(profiles).values({
+            userId: userId,
         }).returning()
 
-        return profile[0];
+        return newProfile[0];
     }
       
     return profile[0];
 }
 
-
-export const updateProfile = async ( about: string) => {
-    const session = await auth(); 
-    if (!session?.user?.id) {
-      return redirect("/api/auth/signin");
-    }
-
-    const profile = await getOrCreateProfile();
+export const updateProfile = async (userId: string, about: string) => {
+    const profile = await getOrCreateProfile(userId);
     
     const updatedProfile = await db.update(profiles)
     .set({ about: about })
@@ -46,7 +29,6 @@ export const updateProfile = async ( about: string) => {
     
     return updatedProfile;
 }
-
 
 export const profileWDomain = async(domain : string) => {
     const allProfiles = await db

@@ -5,7 +5,6 @@ import Image from "next/legacy/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { CgAdd } from "react-icons/cg";
-import { auth } from "~/auth";
 import VidGallery from "~/components/Gallery/VidGallery";
 import Button from "~/components/ui/Button";
 import { getUser } from "~/lib/helpers/transcript";
@@ -47,8 +46,8 @@ export default async function Page({
   if(!user) {
     return redirect("/")
   }
-  const session = await auth();
-  // const { toast } = useToast();
+  // For guest access, create a fallback when no session exists
+  const currentUserId = 'guest';
 
 
 
@@ -85,21 +84,17 @@ export default async function Page({
 
           {/* button */}
           <div className="flex items-center gap-4 max-md:hidden ">
-            {session?.userId ? (
-              <Link href="/generate">
-                <Button className="space-x-2 bg-white text-black">
-                  <CgAdd className="text-xl" />
-                  <span>Add video</span>
-                </Button>
-              </Link>
-            ) : null}
-            {session?.userId && (
-              <Link href={`/c/${session?.user?.id}/profile`}>
-                <div className="10 rounded-full bg-white p-2 text-black">
-                  <Settings className="text-2xl" />
-                </div>
-              </Link>
-            )}
+            <Link href="/generate">
+              <Button className="space-x-2 bg-white text-black">
+                <CgAdd className="text-xl" />
+                <span>Add video</span>
+              </Button>
+            </Link>
+            <Link href={`/c/${currentUserId}/profile`}>
+              <div className="10 rounded-full bg-white p-2 text-black">
+                <Settings className="text-2xl" />
+              </div>
+            </Link>
             <Link href="/">
               <div className="10 rounded-full bg-white p-2 text-black">
                 <HomeIcon className="text-xl" />
@@ -119,15 +114,13 @@ export default async function Page({
                 <Video className="h-10 w-10  rounded-full " />
               </Link>
             ) : null} */}
-            {session?.userId ? (
-              <Link
-                href="/generate"
-                className="h-full self-stretch rounded-full bg-white p-2 text-black"
-              >
-                <Video className="h-10 w-10  rounded-full " />
-              </Link>
-            ) : null}
-            <Link href={`/c/${session?.userId}/profile`}>
+            <Link
+              href="/generate"
+              className="h-full self-stretch rounded-full bg-white p-2 text-black"
+            >
+              <Video className="h-10 w-10  rounded-full " />
+            </Link>
+            <Link href={`/c/${currentUserId}/profile`}>
               <Settings className="h-10 w-10 text-white" />
             </Link>
           </div>

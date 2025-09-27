@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState, Suspense, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useSession, signOut } from 'next-auth/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Home, 
@@ -65,7 +64,6 @@ interface VideoData {
 }
 
 const WatchPageContent = () => {
-  const { data: session } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
@@ -81,6 +79,7 @@ const WatchPageContent = () => {
 
   // Get URL from query params
   const videoUrl = searchParams.get('url');
+  const videoKey = videoUrl ? `video:${videoUrl}` : undefined;
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -104,17 +103,37 @@ const WatchPageContent = () => {
       return;
     }
 
-    if (!session) {
-      router.push('/api/auth/signin?callbackUrl=' + encodeURIComponent('/watch?url=' + encodeURIComponent(videoUrl)));
-      return;
-    }
+    // Authentication removed - proceed without session check
 
     const fetchVideoData = async () => {
       try {
         setIsLoading(true);
         setError(null);
+        setVideoData(null);
+        setSummaryLoading(true);
 
-        const response = await fetch(`/api/transcript-production?url=${encodeURIComponent(videoUrl)}`);
+        // Load cached per-video data if available
+        try {
+          if (videoKey) {
+            const cached = localStorage.getItem(videoKey);
+            if (cached) {
+              const parsed = JSON.parse(cached) as VideoData;
+              if (parsed?.videoId && parsed?.metaData) {
+                setVideoData(parsed);
+                setSummaryLoading(false);
+              }
+            }
+          }
+        } catch {}
+
+        const response = await fetch(`/api/transcript?url=${encodeURIComponent(videoUrl)}`, {
+          headers: { 'Cache-Control': 'no-store' }
+        });
+        const contentType = response.headers.get('content-type') || '';
+        if (!contentType.includes('application/json')) {
+          const text = await response.text();
+          throw new Error(`Unexpected response type. Status ${response.status}.`);
+        }
         const data = await response.json();
 
         if (!response.ok) {
@@ -164,6 +183,10 @@ const WatchPageContent = () => {
         }
         
         setVideoData(data);
+        // Persist per-video cache
+        try {
+          if (videoKey) localStorage.setItem(videoKey, JSON.stringify(data));
+        } catch {}
         setSummaryLoading(false);
       } catch (err) {
         console.error('Error fetching video data:', err);
@@ -179,7 +202,7 @@ const WatchPageContent = () => {
     };
 
     fetchVideoData();
-  }, [videoUrl, session, router, toast]);
+  }, [videoUrl, router, toast]);
 
   // Handle share
   const handleShare = async () => {
@@ -205,15 +228,10 @@ const WatchPageContent = () => {
   const handleSignOut = async () => {
     try {
       setIsProfileDropdownOpen(false);
-      console.log('🔄 Signing out user...');
-      await signOut({ 
-        callbackUrl: '/',
-        redirect: true 
-      });
-      console.log('✅ Sign out successful');
+      console.log('🔄 Redirecting to home...');
+      router.push('/');
     } catch (error) {
-      console.error('❌ Sign out error:', error);
-      // Force redirect to home page even if signOut fails
+      console.error('❌ Redirect error:', error);
       window.location.href = '/';
     }
   };
@@ -303,75 +321,63 @@ const WatchPageContent = () => {
                 <span className="hidden sm:block">Share</span>
               </motion.button>
 
-              {session?.user && (
-                <div className="relative" ref={dropdownRef}>
-                  <button
-                    onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                    className="flex items-center gap-2 p-1 rounded-full hover:bg-gray-100 transition-colors"
-                  >
-                    {session.user?.image ? (
-                      <Image
-                        src={session.user.image}
-                        alt="Profile"
-                        width={32}
-                        height={32}
-                        className="rounded-full"
-                      />
-                    ) : (
-                      <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center">
-                        <User size={16} className="text-white" />
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                  className="flex items-center gap-2 p-1 rounded-full hover:bg-gray-100 transition-colors"
+                >
+                  <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center">
+                    <User size={16} className="text-white" />
+                  </div>
+                  <ChevronDown 
+                    size={16} 
+                    className={`text-gray-600 transition-transform ${
+                      isProfileDropdownOpen ? 'rotate-180' : ''
+                    }`} 
+                  />
+                </button>
+
+                {/* Dropdown Menu */}
+                <AnimatePresence>
+                  {isProfileDropdownOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50"
+                    >
+                      {/* User Info */}
+                      <div className="px-4 py-3 border-b border-gray-100">
+                        <p className="text-sm font-medium text-gray-900">
+                          Guest User
+                        </p>
+                        <p className="text-xs text-gray-500 truncate">
+                          guest@example.com
+                        </p>
                       </div>
-                    )}
-                    <ChevronDown 
-                      size={16} 
-                      className={`text-gray-600 transition-transform ${
-                        isProfileDropdownOpen ? 'rotate-180' : ''
-                      }`} 
-                    />
-                  </button>
 
-                  {/* Dropdown Menu */}
-                  <AnimatePresence>
-                    {isProfileDropdownOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                        transition={{ duration: 0.2 }}
-                        className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50"
+                      {/* Menu Items */}
+                      <Link
+                        href="/c/guest/profile"
+                        className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                        onClick={() => setIsProfileDropdownOpen(false)}
                       >
-                        {/* User Info */}
-                        <div className="px-4 py-3 border-b border-gray-100">
-                          <p className="text-sm font-medium text-gray-900">
-                            {session.user?.name}
-                          </p>
-                          <p className="text-xs text-gray-500 truncate">
-                            {session.user?.email}
-                          </p>
-                        </div>
+                        <Settings size={16} />
+                        View Profile
+                      </Link>
 
-                        {/* Menu Items */}
-                        <Link
-                          href={`/c/${session.user?.id}/profile`}
-                          className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                          onClick={() => setIsProfileDropdownOpen(false)}
-                        >
-                          <Settings size={16} />
-                          View Profile
-                        </Link>
-
-                        <button
-                          onClick={handleSignOut}
-                          className="flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors w-full text-left"
-                        >
-                          <LogOut size={16} />
-                          Sign Out
-                        </button>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              )}
+                      <button
+                        onClick={handleSignOut}
+                        className="flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors w-full text-left"
+                      >
+                        <LogOut size={16} />
+                        Go Home
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
           </div>
         </div>
@@ -480,6 +486,7 @@ const WatchPageContent = () => {
                   createdAt: new Date(),
                   updatedAt: new Date()
                 }))}
+                videoId={videoData.videoId}
               />
             </div>
           </motion.div>

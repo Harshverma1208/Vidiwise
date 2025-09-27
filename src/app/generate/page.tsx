@@ -8,19 +8,13 @@ import { HomeIcon } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { fetchMetaData, fetchVideoId } from "~/lib/helpers/transcript";
-// import VidGallery from "~/components/Gallery/VidGallery";
 import { MdPerson } from "react-icons/md";
-import { useSession } from "next-auth/react";
-
-
 
 const Page = () => {
   const [videoUrl, setvideoUrl] = useState("");
   const [vidId, setvidId] = useState("")
   const { toast } = useToast();
-  const { data: session } = useSession()
   const [showModal, setshowModal] = useState(false);
-  // console.log(data)
 
   const [metaData, setmetaData] = useState({
     title: "",
@@ -29,7 +23,6 @@ const Page = () => {
     thumbnail_url: ""
   })
 
-
   const getVideoData = async() => {
     setshowModal(true)
     try {
@@ -37,7 +30,6 @@ const Page = () => {
         toast({
           title: "Please Enter a Valid Video URL or ID",
         });
-
         return;
       }
       const id = await fetchVideoId(videoUrl);
@@ -52,12 +44,10 @@ const Page = () => {
       if(id) {
         setvidId(id);
         const data = await fetchMetaData(id);
-        // console.log(data);
         setmetaData(data);
       } else if (videoUrl.length == 11){ 
         setvidId(videoUrl);
         const data = await fetchMetaData(videoUrl);
-        // console.log(data);
         setmetaData(data);
       }
     } catch (error: any) {
@@ -70,68 +60,58 @@ const Page = () => {
   }
 
   return (
-    <>
-      <div className="relative grid h-screen place-content-center gap-12 bg-black">
-        {/* <div className="absolute left-0 top-0 h-screen w-screen bg-black opacity-50"> */}
-        {/* </div> */}
-
-        <SetUrlToSearch seturl={setvideoUrl} />
-        <Image
-          src={"/bg.png"}
-          alt="hero"
-          layout="fill"
-          priority
-          className="absolute z-10 h-full w-full opacity-30 "
-        />
-        <Image
-          src={"/images/hero/bg.png"}
-          alt="hero"
-          layout="fill"
-          className="absolute z-10 h-full w-full opacity-50"
-        />
-        {/* <VidGallery
-        videos={themeVideos}
-        className="z-20 gap-x-32"
-        hideDetails={true}
-      /> */}
-        <div className="absolute left-1/2 right-1/2 top-5 z-10 flex w-[90%] -translate-x-1/2 items-center justify-between px-5 *:text-4xl *:text-white md:w-3/4">
-          <Link href="/" className="rounded-full border-2 p-2">
-            <HomeIcon />
-          </Link>
-          {session?.user && (
-            <Link
-              href={"/c/" + session?.user.id}
-              className="rounded-full border-2 p-2"
-            >
-              <MdPerson className="h-6 w-6" />
-            </Link>
-          )}
-        </div>
-        <form
-          action={getVideoData}
-          className="flex-col-center-center z-10 gap-5 max-md:w-screen"
+    <div className="relative grid h-screen place-content-center gap-12 bg-black">
+      <SetUrlToSearch seturl={setvideoUrl} />
+      <Image
+        src={"/bg.png"}
+        alt="hero"
+        layout="fill"
+        priority
+        className="absolute z-10 h-full w-full opacity-30 "
+      />
+      <Image
+        src={"/images/hero/bg.png"}
+        alt="hero"
+        layout="fill"
+        className="absolute z-10 h-full w-full opacity-50"
+      />
+      
+      <div className="absolute left-1/2 right-1/2 top-5 z-10 flex w-[90%] -translate-x-1/2 items-center justify-between px-5 *:text-4xl *:text-white md:w-3/4">
+        <Link href="/" className="rounded-full border-2 p-2">
+          <HomeIcon />
+        </Link>
+        <Link
+          href="/c/guest"
+          className="rounded-full border-2 p-2"
         >
-          <input
-            type="text"
-            placeholder="YouTube Video Url or ID"
-            value={videoUrl}
-            className="w-[90%] rounded-full px-4 py-3 md:w-[450px]"
-            onChange={async (e) => {
-              setvideoUrl(e.target.value);
-            }}
-          />
-
-          <Button
-            disabled={vidId ? true : false}
-            type="submit"
-            className="bg-white"
-          >
-            Get Video
-          </Button>
-        </form>
+          <MdPerson className="h-6 w-6" />
+        </Link>
       </div>
+      
+      <form
+        action={getVideoData}
+        className="flex-col-center-center z-10 gap-5 max-md:w-screen"
+      >
+        <input
+          type="text"
+          placeholder="YouTube Video Url or ID"
+          value={videoUrl}
+          className="w-[90%] rounded-full px-4 py-3 md:w-[450px]"
+          onChange={async (e) => {
+            setvideoUrl(e.target.value);
+          }}
+        />
 
-      {/*  */}
+        <Button
+          disabled={vidId ? true : false}
+          type="submit"
+          className="bg-white"
+        >
+          Get Video
+        </Button>
+      </form>
+
+      {/* Video Preview Modal */}
       {vidId && showModal && metaData.thumbnail_url && (
         <div className="absolute bottom-0 left-0 right-0 top-0 z-50 grid place-content-center backdrop-blur-md">
           <div className="mx-auto w-[90%] max-w-6xl rounded-xl bg-white p-5 sm:w-[60%]">
@@ -158,26 +138,8 @@ const Page = () => {
                     continue, otherwise try with another url.
                   </p>
                 </div>
-                {/* <Link href={`/generate/${vidId}`}> */}
-                {/* <Button
-                  onClick={() => {
-                    window.location.pathname = "/generate/" + vidId;
-                  }}
-                  className="bg-black text-white"
-                >
-                  Generate
-                </Button> */}
-                {/* </Link> */}
 
                 <div className="flex flex-col items-center justify-between md:flex-row">
-                  {/* <Button
-                    onClick={() => {
-                      setshowModal(false);
-                    }}
-                    className="bg-white text-black border border-black"
-                  >
-                    Close
-                  </Button> */}
                   <Button
                     onClick={() => {
                       window.location.pathname = "/generate/" + vidId;
@@ -192,10 +154,9 @@ const Page = () => {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
-
 
 const SetUrlToSearch = ({ seturl } : {
   seturl : (url: string) => void

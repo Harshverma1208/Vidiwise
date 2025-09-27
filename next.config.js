@@ -17,21 +17,43 @@ const config = {
     workerThreads: false,
   },
   staticPageGenerationTimeout: 1000,
-  webpack: (config, { webpack }) => {
-    config.plugins.push(
-      // mute errors for unused deps and prevent postgres from being bundled in edge runtime
-      new webpack.IgnorePlugin({
-        resourceRegExp:
-          /(^@google-cloud\/spanner|^@mongodb-js\/zstd|^aws-crt|^aws4$|^pg-native$|^mongodb-client-encryption$|^@sap\/hana-client$|^@sap\/hana-client\/extension\/Stream$|^snappy$|^react-native-sqlite-storage$|^bson-ext$|^cardinal$|^kerberos$|^hdb-pool$|^sql.js$|^sqlite3$|^better-sqlite3$|^ioredis$|^typeorm-aurora-data-api-driver$|^pg-query-stream$|^oracledb$|^mysql$|^snappy\/package\.json$|^cloudflare:sockets$)/,
-      }),
-    );
-
-    config.module = {
-      ...config.module,
-      exprContextCritical: false,
-    };
-
-    // Fallback for problematic modules in edge runtime
+  
+  // Security headers
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'origin-when-cross-origin',
+          },
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on',
+          },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000; includeSubDomains',
+          },
+          {
+            key: 'Content-Security-Policy',
+            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com https://api.youtube.com https://youtube.com; frame-src 'self' https://www.youtube.com;",
+          },
+        ],
+      },
+    ];
+  },
+  webpack: (config, { webpack, isServer }) => {
+    // Configure fallbacks for Node.js modules - apply to both client and server
     config.resolve = {
       ...config.resolve,
       fallback: {
@@ -40,7 +62,50 @@ const config = {
         os: false,
         path: false,
         crypto: false,
+        net: false,
+        tls: false,
+        stream: false,
+        util: false,
+        url: false,
+        assert: false,
+        http: false,
+        https: false,
+        zlib: false,
+        querystring: false,
+        buffer: false,
+        events: false,
+        process: false,
       },
+    };
+
+    // Server-side configurations
+    if (isServer) {
+      config.plugins.push(
+        // Ignore problematic modules that shouldn't be bundled
+        new webpack.IgnorePlugin({
+          resourceRegExp:
+            /(^@google-cloud\/spanner|^@mongodb-js\/zstd|^aws-crt|^aws4$|^pg-native$|^mongodb-client-encryption$|^@sap\/hana-client$|^@sap\/hana-client\/extension\/Stream$|^snappy$|^react-native-sqlite-storage$|^bson-ext$|^cardinal$|^kerberos$|^hdb-pool$|^sql.js$|^sqlite3$|^better-sqlite3$|^ioredis$|^typeorm-aurora-data-api-driver$|^pg-query-stream$|^oracledb$|^mysql$|^snappy\/package\.json$|^cloudflare:sockets$)/,
+        }),
+      );
+    } else {
+      // Client-side configurations
+      config.externals = config.externals || [];
+      config.externals.push('pg', 'drizzle-orm/node-postgres', 'drizzle-orm/node-postgres/migrator');
+      
+      // Additional plugins for client-side to ignore server-only modules
+      config.plugins.push(
+        new webpack.IgnorePlugin({
+          resourceRegExp: /^pg$/,
+        }),
+        new webpack.IgnorePlugin({
+          resourceRegExp: /^crypto$/,
+        }),
+      );
+    }
+
+    config.module = {
+      ...config.module,
+      exprContextCritical: false,
     };
 
     return config;

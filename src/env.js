@@ -13,24 +13,11 @@ export const env = createEnv({
       .default("development"),
     SUPABASE_URL: z.string(),
     SUPABASE_ANON_KEY: z.string(),
-    NEXTAUTH_SECRET: z.string(), // Required in all environments for NextAuth v5
-    NEXTAUTH_URL: z.preprocess(
-      // This makes Vercel deployments not fail if you don't set NEXTAUTH_URL
-      // Since NextAuth.js automatically uses the VERCEL_URL if present.
-      (str) => process.env.VERCEL_URL ?? str,
-      // VERCEL_URL doesn't include `https` so it cant be validated as a URL
-      process.env.VERCEL ? z.string() : z.string().url(),
-    ),
-    GOOGLE_CLIENT_ID: z.string().optional(),
-    GOOGLE_CLIENT_SECRET: z.string().optional(),
-    GITHUB_CLIENT_ID: z.string().optional(),
-    GITHUB_CLIENT_SECRET: z.string().optional(),
     LOOPS_EMAIL_KEY: z.string(),
     GEMINI_API_KEY: z.string(),
     STRIPE_SECRET_KEY: z.string(),
     PROJECT_ID_VERCEL: z.string(),
     VERCEL_TEAM_ID: z.string(),
-    AUTH_BEARER_TOKEN: z.string()
   },
 
   /**
@@ -54,18 +41,11 @@ export const env = createEnv({
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     NODE_ENV: process.env.NODE_ENV,
-    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
-    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
-    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
-    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
-    GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
-    GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
     GEMINI_API_KEY: process.env.GEMINI_API_KEY,
     LOOPS_EMAIL_KEY: process.env.LOOPS_EMAIL_KEY,
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
     PROJECT_ID_VERCEL: process.env.PROJECT_ID_VERCEL,
     VERCEL_TEAM_ID: process.env.VERCEL_TEAM_ID,
-    AUTH_BEARER_TOKEN: process.env.AUTH_BEARER_TOKEN,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
@@ -77,4 +57,4 @@ export const env = createEnv({
    * `SOME_VAR=''` will throw an error.
    */
   emptyStringAsUndefined: true,
-}); 
+});

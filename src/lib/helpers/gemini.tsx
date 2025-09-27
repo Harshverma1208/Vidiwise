@@ -12,6 +12,17 @@ const prompt =
 
 
 export const textTotext =async (inp: string, para: string) =>{
+  // Check if GEMINI_API_KEY is configured
+  if (!env.GEMINI_API_KEY) {
+    return "AI chat requires GEMINI_API_KEY configuration. Please set up the API key to use this feature.";
+  }
+  
+  // Additional check for empty API key
+  if (env.GEMINI_API_KEY.trim().length < 10) {
+    console.log('⚠️ GEMINI_API_KEY appears to be invalid or too short');
+    return "AI functionality requires a valid GEMINI_API_KEY. Please check your configuration.";
+  }
+
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
   let text, result, response;
   try {
@@ -33,18 +44,21 @@ export const textTotext =async (inp: string, para: string) =>{
       response = result.response;
       text = result.response.text();
     }
-  } catch (error) {
-    try {
-      result = await model.generateContent(
-        "Analyze the question and give a simplified ans. The question is: " +
-          inp,
-      );
-      response = result.response;
-      text = result.response.text(); 
     } catch (error) {
-      text = "Sorry, we are facing an error at the moment. Please try again later."
+      console.error('Gemini API error (attempt 1):', error);
+      try {
+        result = await model.generateContent(
+          "Analyze the question and give a simplified ans. The question is: " +
+            inp,
+        );
+        response = result.response;
+        text = result.response.text(); 
+      } catch (error2) {
+        console.error('Gemini API error (attempt 2):', error2);
+        // Throw error so calling code can handle fallback
+        throw new Error("Gemini API unavailable: " + (error2 as Error).message);
+      }
     }
-  } 
 //   setresponse(text);
   return text
 }
